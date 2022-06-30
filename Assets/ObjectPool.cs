@@ -8,7 +8,7 @@ public class ObjectPool : MonoBehaviour
     public static ObjectPool instance;
 
     private List<GameObject> pooledObjects = new List<GameObject>();
-    private int amountToPool = 20;
+    private int amountToPool = 30;
 
     // Start is called before the first frame update
     void Awake()
