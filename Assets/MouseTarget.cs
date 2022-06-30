@@ -13,7 +13,6 @@ public class MouseTarget : MonoBehaviour
         Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPosition.z = 0f;
         transform.position = mouseWorldPosition;
-        Debug.Log(mouseWorldPosition);
     }
   
 }

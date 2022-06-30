@@ -10,19 +10,24 @@ public class Building : MonoBehaviour, iDestroyable
     // Start is called before the first frame update
     void Start()
     {
-        AssignAnimationIDs();
+      //  AssignAnimationIDs();
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        _animator.SetBool(_animIDExplosion, true);
+        //_animator.SetBool(_animIDExplosion, true);
 
     }
 
     private void AssignAnimationIDs()
     {
         _animIDExplosion = Animator.StringToHash("Explosion");
+    }
+
+    public void Destroy()
+    {
+        gameObject.SetActive(false);
     }
 }
