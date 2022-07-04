@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FriendlyMissileLauncherManager : MonoBehaviour
 {
-    [SerializeField] FriendlyMissileLauncher[] friendlyLaunchers;
+     public List<FriendlyMissileLauncher> friendlyLaunchers = new List<FriendlyMissileLauncher>();
 
     // Start is called before the first frame update
 
@@ -22,6 +22,15 @@ public class FriendlyMissileLauncherManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3) && friendlyLaunchers[2].missilesLeft != 0)
         {
             friendlyLaunchers[2].FireMissile();
+        }
+    }
+    public void ActivateMissileLaunchers()
+    {
+        foreach (FriendlyMissileLauncher missileLauncher in friendlyLaunchers)
+        {
+            missileLauncher.missilesLeft = 10;
+            missileLauncher.missilesLeftUI.text = $"{missileLauncher.missilesLeft}";
+            missileLauncher.gameObject.SetActive(true);
         }
     }
 }

@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    [SerializeField] GameObject missilePrefab;
     public static ObjectPool instance;
+    public List<GameObject> pooledMissiles = new List<GameObject>();
 
-    private List<GameObject> pooledObjects = new List<GameObject>();
-    private int amountToPool = 30;
+    [SerializeField] private GameObject missilePrefab;
+    [SerializeField] private GameObject markerPrefab;
 
-    // Start is called before the first frame update
+    private int amountOfMissilesToPool = 30;
+
     void Awake()
     {
         if (instance == null)
@@ -21,23 +22,28 @@ public class ObjectPool : MonoBehaviour
 
     void Start()
     {
-        for (int i = 0; i < amountToPool; i++)
+        for (int i = 0; i < amountOfMissilesToPool; i++)
         {
-            GameObject obj = Instantiate(missilePrefab);
-            obj.SetActive(false);
-            pooledObjects.Add(obj);
+            GameObject missile = Instantiate(missilePrefab);
+            GameObject marker = Instantiate(markerPrefab);
+            missile.GetComponent<Missile>().marker = marker;
+            missile.SetActive(false);
+            marker.SetActive(false);
+            pooledMissiles.Add(missile);
         }
-    }
 
-    public GameObject GetPooledObject()
+
+    }
+    public GameObject GetPooledMissile()
     {
-        for (int i = 0; i < pooledObjects.Count; i++)
+        for (int i = 0; i < pooledMissiles.Count; i++)
         {
-            if (!pooledObjects[i].activeInHierarchy)
+            if (!pooledMissiles[i].activeInHierarchy)
             {
-                return pooledObjects[i];
+                return pooledMissiles[i];
             }
         }
         return null;
     }
+
 }

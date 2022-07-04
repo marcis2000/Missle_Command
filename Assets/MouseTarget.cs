@@ -6,8 +6,6 @@ public class MouseTarget : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
 
-
-    // Update is called once per frame
     void Update()
     {
         Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);

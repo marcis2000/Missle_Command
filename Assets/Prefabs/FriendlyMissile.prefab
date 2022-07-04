@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2047312237}
   m_Layer: 0
   m_Name: FriendlyMissile
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,10 +99,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 340045384285454429336b65341e2d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 0}
   circeClollider: {fileID: 0}
-  missleSpeed: 5
+  spriteRenderer: {fileID: 0}
   destination: {x: 0, y: 0}
+  missleSpeed: 5
+  isFriendly: 0
   state: 0
   missle: {fileID: 21300000, guid: 9a397e83c4c3c994c988babb654f2b5d, type: 3}
   circle: {fileID: 21300000, guid: 8f66c60fb167a0f4299a9865ef4badc9, type: 3}

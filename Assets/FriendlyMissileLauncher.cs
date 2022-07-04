@@ -4,44 +4,59 @@ using UnityEngine;
 
 public class FriendlyMissileLauncher : MonoBehaviour, iDestroyable
 {
-    [SerializeField] Transform mouseTarget;
-    private float missleSpeed = 5;
-    public int missilesLeft = 10;
+    public TMPro.TextMeshProUGUI missilesLeftUI;
+    public int missilesLeft;
 
-    // Update is called once per frame
-    //void Update()
-    //{
-       // if (mouseTarget.position.y > -9 && Input.GetKeyDown(KeyCode.Mouse0))
+    [SerializeField] private Transform mouseTarget;
+    private float missleSpeed = 10;
+
+    private void OnEnable()
+    {
+        missilesLeftUI.text = $"{missilesLeft}";
+    }
+
     public void FireMissile()
-        {
-            GameObject missile = ObjectPool.instance.GetPooledObject();
+    {
+        GameObject missile = ObjectPool.instance.GetPooledMissile();
 
-            if(missile != null)
+        if (missile != null && gameObject.activeSelf == true && mouseTarget.position.y > -12.7f)
+        {
+            missilesLeft--;
+            missile.SetActive(true);
+            SetMissileDestination(missile);
+
+            missilesLeftUI.text = $"{missilesLeft}";
+            if (missilesLeft == 0)
             {
-                missilesLeft--;
-                 missile.SetActive(true);
-                SetMissileDestination(missile);
-                if (missilesLeft == 0)
-                {
-                    gameObject.SetActive(false);
-                }
+                gameObject.SetActive(false);
             }
         }
-   // }
-
+    }
 
     public void SetMissileDestination(GameObject missile)
     {
-        missile.GetComponent<FriendlyMissile>().destination = mouseTarget.position;
-        missile.GetComponent<FriendlyMissile>().missleSpeed = missleSpeed;
-        missile.GetComponent<FriendlyMissile>().spriteRenderer.color = Color.green;
-        missile.GetComponent<FriendlyMissile>().circeClollider.enabled = false;
+        Missile missileScript = missile.GetComponent<Missile>();
+
+        missileScript.destination = mouseTarget.position;
+        missileScript.missleSpeed = missleSpeed;
+        missileScript.spriteRenderer.color = Color.green;
+        missileScript.circeClollider.enabled = false;
+        missileScript.isFriendly = true;
+        missileScript.marker.transform.position = mouseTarget.position;
+        missileScript.marker.SetActive(true);
+
         missile.transform.position = transform.position;
+        float targetDirectionX = mouseTarget.position.x - missile.transform.position.x;
+        float targetDirectionY = mouseTarget.position.y - missile.transform.position.y;
+        float angle = Mathf.Atan2(targetDirectionY, targetDirectionX) * Mathf.Rad2Deg;
+        missile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 180));
+
     }
 
     public void Destroy()
     {
+        missilesLeft = 0;
+        missilesLeftUI.text = $"{missilesLeft}";
         gameObject.SetActive(false);
-
     }
 }

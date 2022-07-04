@@ -1,58 +1,90 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class EnemyMissileLauncher : MonoBehaviour
 {
-    GameObject[] defenders;
-    Transform target;
-    private float missleSpeed = 5;
-    private float timeBetweenLaunches =2f;
-    private float timer;
+    public int numberOfMissileWaves;
+    public float timeToNextLaunch = 5;
+    public float missleSpeed = 1;
+    public event EventHandler OnAddToDeLaunchedEnemyMissilesCount;
 
-    // Start is called before the first frame update
-    void Start()
+
+    private GameObject[] defenders;
+    private Transform target;
+
+    public void SetNewParameters()
     {
         defenders = GameObject.FindGameObjectsWithTag("Defenders");
+        numberOfMissileWaves = 3;
+        timeToNextLaunch += 0.5f;
+        missleSpeed++;
+        StartCoroutine(SpawnMissiles());
     }
 
-    // Update is called once per frame
-    void Update()
+    public void FireMissile(Vector3 startPosition)
     {
-        timer += Time.deltaTime;
-        if (timer >= timeBetweenLaunches)
+        GameObject missile = ObjectPool.instance.GetPooledMissile();
+        if (missile != null) 
         {
-            timer = 0;
-            GameObject missile = ObjectPool.instance.GetPooledObject();
-            if (missile != null)
+            do
             {
-                target = defenders[Random.Range(0, defenders.Length)].transform;
-                if(target.gameObject.activeSelf == false)
-                {
-                    timer = timeBetweenLaunches;
-                    return;
-                }
-                else
-                {
-                    FireMissile(missile);
-                }
-            }
-        }
-    }
+                target = defenders[UnityEngine.Random.Range(0, defenders.Length)].transform;
+            } 
+            while (target.gameObject.activeSelf == false && IsAnyDefenderIsActive());
 
-    public void FireMissile(GameObject missile)
-    {
-        missile.SetActive(true);
-        SetMissileDestination(missile);
+            missile.transform.position = startPosition;
+            missile.SetActive(true);
+            SetMissileDestination(missile);
+            OnAddToDeLaunchedEnemyMissilesCount?.Invoke(this, EventArgs.Empty);
+
+        }
+
     }
 
     public void SetMissileDestination(GameObject missile)
     {
+        Missile missileScript = missile.GetComponent<Missile>();
 
-        missile.GetComponent<FriendlyMissile>().destination = target.position;
-        missile.GetComponent<FriendlyMissile>().missleSpeed = missleSpeed;
-        missile.GetComponent<FriendlyMissile>().spriteRenderer.color = Color.red;
-        missile.GetComponent<FriendlyMissile>().circeClollider.enabled = true;
-        missile.transform.position = new Vector3(Random.Range(-18.0f, 18.0f), 11.5f, 0); ;
+        missileScript.destination = target.position;
+        missileScript.missleSpeed = missleSpeed;
+        missileScript.spriteRenderer.color = Color.red;
+        missileScript.circeClollider.enabled = true;
+        missileScript.isFriendly = false;
+        float targetDirectionX = target.position.x - missile.transform.position.x;
+        float targetDirectionY = target.position.y - missile.transform.position.y;
+        float angle = Mathf.Atan2(targetDirectionY, targetDirectionX) * Mathf.Rad2Deg;
+        missile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 180));
+    }
+
+    private bool IsAnyDefenderIsActive()
+    {
+        bool isAnyDefenderActive = false;
+        foreach(GameObject defender in defenders)
+        {
+            if(defender.activeSelf == true)
+            {
+                isAnyDefenderActive = true;
+            }
+        }
+        return isAnyDefenderActive;
+
+
+    }
+    public IEnumerator SpawnMissiles()
+    {
+        while(numberOfMissileWaves > 0)
+        {
+            int i = 0;
+            while (i < 4)
+            {
+                Vector3 startPosition = new Vector3(UnityEngine.Random.Range(-18.0f, 18.0f), 16f, 0);
+                FireMissile(startPosition);
+                i++;
+            }
+            numberOfMissileWaves--;
+            yield return new WaitForSeconds(timeToNextLaunch);
+        }
     }
 }
