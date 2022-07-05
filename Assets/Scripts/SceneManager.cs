@@ -7,26 +7,27 @@ using System;
 
 public class SceneManager : MonoBehaviour
 {
-    [SerializeField] private Spaceship spaceship;
-    [SerializeField] private GameObject endOfRoundScreen;
-    [SerializeField] private GameObject endOfGameScreen;
-    [SerializeField] private TMPro.TextMeshProUGUI pointsUI;
-    [SerializeField] private TMPro.TextMeshProUGUI levelUI;
-    [SerializeField] EnemyMissileLauncher enemyLauncher;
-    [SerializeField] private FriendlyMissileLauncherManager friendlyLaunchersManager;
-    [SerializeField] private List<Building> buildings = new List<Building>();
-    private TMPro.TextMeshProUGUI missilesPointsUI;
-    private TMPro.TextMeshProUGUI buildingsPointsUI;
-    private TMPro.TextMeshProUGUI secondsToNextRoundUI;
+    [SerializeField] private Spaceship _spaceship;
+    [SerializeField] private GameObject _endOfRoundScreen;
+    [SerializeField] private GameObject _endOfGameScreen;
+    [SerializeField] private TMPro.TextMeshProUGUI _pointsUI;
+    [SerializeField] private TMPro.TextMeshProUGUI _levelUI;
+    [SerializeField] private EnemyMissileLauncher _enemyLauncher;
+    [SerializeField] private FriendlyMissileLauncherManager _friendlyLaunchersManager;
+    [SerializeField] private List<Building> _buildings = new List<Building>();
 
-    private int spaceshipsPerRound = 0;
-    private int currentPoints = 0;
-    private int level = 0;
-    private int bulidingsDestroyed = 0;
-    private int launchedEnemyMissiles = 0;
-    private int destroyedEnemyMissiles = 0;
-    private bool pausedToCalculatePoints = false;
-    // Start is called before the first frame update
+    private TMPro.TextMeshProUGUI _missilesPointsUI;
+    private TMPro.TextMeshProUGUI _buildingsPointsUI;
+    private TMPro.TextMeshProUGUI _secondsToNextRoundUI;
+
+    private int _spaceshipsPerRound = 0;
+    private int _currentPoints = 0;
+    private int _level = 0;
+    private int _bulidingsDestroyed = 0;
+    private int _launchedEnemyMissiles = 0;
+    private int _destroyedEnemyMissiles = 0;
+    private bool _pausedToCalculatePoints = false;
+
     void Start()
     {
         Time.timeScale = 1;
@@ -36,73 +37,75 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
-        if (!pausedToCalculatePoints && destroyedEnemyMissiles == launchedEnemyMissiles && enemyLauncher.numberOfMissileWaves == 0)
+        if (!_pausedToCalculatePoints && _destroyedEnemyMissiles == _launchedEnemyMissiles && _enemyLauncher.NumberOfMissileWaves == 0)
         {
             FinishLevel();
         }
-        if (bulidingsDestroyed == 6)
+        if (_bulidingsDestroyed == 6)
         {
             FinishGame();
         }
 
     }
+    //
     private void FinishLevel()
     {
-        pausedToCalculatePoints = true;
-        destroyedEnemyMissiles = 0;
-        launchedEnemyMissiles = 0;
-        endOfRoundScreen.SetActive(true);
-        spaceship.gameObject.SetActive(false);
+        _pausedToCalculatePoints = true;
+        _destroyedEnemyMissiles = 0;
+        _launchedEnemyMissiles = 0;
+        _spaceship.gameObject.SetActive(false);
+        _endOfRoundScreen.SetActive(true);
         AddPointsFromBuildingsLeft();
         AddPointsFromMissilesLeft();
         StartCoroutine(WaitForNextLevelToStart());
     }
     private void StartNextLevel()
     {
-        pausedToCalculatePoints = false;
-        endOfRoundScreen.SetActive(false);
-        level++;
-        levelUI.text = $"Level {level}";
-        spaceshipsPerRound = level - 1;
-        spaceship.gameObject.SetActive(true);
-        friendlyLaunchersManager.ActivateMissileLaunchers();
-        enemyLauncher.SetNewParameters();
+        _pausedToCalculatePoints = false;
+        _endOfRoundScreen.SetActive(false);
+        _level++;
+        _levelUI.text = $"Level {_level}";
+        _spaceshipsPerRound = _level;
+        _spaceship.gameObject.SetActive(true);
+        _friendlyLaunchersManager.ActivateMissileLaunchers();
+        _enemyLauncher.SetNewParameters();
     }
 
     private void FinishGame()
     {
         Time.timeScale = 0;
-        endOfGameScreen.SetActive(true);
+        _endOfGameScreen.SetActive(true);
     }
     
+    // Is used by PLAY AGAIN button.
     public void RestartGame()
     {
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);  
     }
 
     private void AddPointsFromBuildingsLeft()
     {
-        int pointsFromBuildings = (6 - bulidingsDestroyed) * 100;
-        buildingsPointsUI.text = $"Points from buildings left: {pointsFromBuildings}";
+        int buildingsLeft = 6 - _bulidingsDestroyed;    // At the beggining there are 6 buildings on the scene.
+        int pointsFromBuildings = (buildingsLeft) * 100;   //100 points for each building left.
+        _buildingsPointsUI.text = $"Points from buildings left: {pointsFromBuildings}";
         AddPoints(pointsFromBuildings);
     }
 
     private void AddPointsFromMissilesLeft()
     {
         int missilesLeft = 0;
-        foreach (FriendlyMissileLauncher missileLauncher in friendlyLaunchersManager.friendlyLaunchers)
+        foreach (FriendlyMissileLauncher missileLauncher in _friendlyLaunchersManager.FriendlyLaunchers)
         {
             missilesLeft += missileLauncher.missilesLeft;
         }
-        int pointsFromMissilesleft = missilesLeft * 5;
-        missilesPointsUI.text = $"Points form missiles left: {pointsFromMissilesleft}";
+        int pointsFromMissilesleft = missilesLeft * 5;   // 5 points for every missile left.
+        _missilesPointsUI.text = $"Points form missiles left: {pointsFromMissilesleft}";
         AddPoints(pointsFromMissilesleft);
     }
     private void AddPoints(int points)
     {
-        currentPoints += points;
-        pointsUI.text = $"{currentPoints}";
+        _currentPoints += points;
+        _pointsUI.text = $"{_currentPoints}";
     }
     private void AddMissilePoints(object sender, EventArgs e)
     {
@@ -111,41 +114,42 @@ public class SceneManager : MonoBehaviour
     private void AddSpaceshipPoints(object sender, EventArgs e)
     {
         AddPoints(200);
-        spaceshipsPerRound--;
-        if (spaceshipsPerRound > 0)
+        _spaceshipsPerRound--;
+        if (_spaceshipsPerRound > 0)
         {
-            spaceship.gameObject.SetActive(true);
+            _spaceship.gameObject.SetActive(true); 
         }
     }
+
     private void BuildingDestroyed(object sender, EventArgs e)
     {
-        bulidingsDestroyed++;
+        _bulidingsDestroyed++;
     }
-    private void AddToDeLaunchedEnemyMissilesCount(object sender, EventArgs e)
+    private void AddToLaunchedEnemyMissilesCount(object sender, EventArgs e)
     {
-        launchedEnemyMissiles++;
+        _launchedEnemyMissiles++;
     }
     private void AddToDestroyedEnemyMissilesCount(object sender, EventArgs e)
     {
-        destroyedEnemyMissiles++;
+        _destroyedEnemyMissiles++;
     }
 
     private void GetAllReferences()
     {
-        enemyLauncher.OnAddToDeLaunchedEnemyMissilesCount += AddToDeLaunchedEnemyMissilesCount;
-        foreach (GameObject missile in ObjectPool.instance.pooledMissiles)
+        _enemyLauncher.OnAddToLaunchedEnemyMissilesCount += AddToLaunchedEnemyMissilesCount;
+        foreach (GameObject missile in ObjectPool.Instance.PooledMissiles)
         {
             missile.GetComponent<Missile>().OnAddMissilePoints += AddMissilePoints;
             missile.GetComponent<Missile>().OnAddToDestroyedEnemyMissilesCount += AddToDestroyedEnemyMissilesCount;
         }
-        foreach (Building building in buildings)
+        foreach (Building building in _buildings)
         {
             building.OnBuildingDestroyed += BuildingDestroyed;
         }
-        missilesPointsUI = endOfRoundScreen.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>();
-        buildingsPointsUI = endOfRoundScreen.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>();
-        secondsToNextRoundUI = endOfRoundScreen.transform.GetChild(2).GetComponent<TMPro.TextMeshProUGUI>();
-        spaceship.OnAddSpaceshipPoints += AddSpaceshipPoints;
+        _missilesPointsUI = _endOfRoundScreen.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>();
+        _buildingsPointsUI = _endOfRoundScreen.transform.GetChild(1).GetComponent<TMPro.TextMeshProUGUI>();
+        _secondsToNextRoundUI = _endOfRoundScreen.transform.GetChild(2).GetComponent<TMPro.TextMeshProUGUI>();
+        _spaceship.OnAddSpaceshipPoints += AddSpaceshipPoints;
     }
 
     private IEnumerator WaitForNextLevelToStart()
@@ -154,7 +158,7 @@ public class SceneManager : MonoBehaviour
         while(i > 0)
         {
             i--;
-            secondsToNextRoundUI.text = $"Next round starts in: {i} ";
+            _secondsToNextRoundUI.text = $"Next round starts in: {i} ";
             yield return new WaitForSeconds(1);
         }
         StartNextLevel();

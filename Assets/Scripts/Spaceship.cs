@@ -8,48 +8,48 @@ public class Spaceship : MonoBehaviour, iDestroyable
 
     public event EventHandler OnAddSpaceshipPoints;
 
-    [SerializeField] private Transform leftSpawnPoint;
-    [SerializeField] private Transform rightSpawnPoint;
-    [SerializeField] private EnemyMissileLauncher launcher;
+    [SerializeField] private Transform _leftSpawnPoint;
+    [SerializeField] private Transform _rightSpawnPoint;
+    [SerializeField] private EnemyMissileLauncher _launcher;
 
-    private Vector2 destination;
-    private float spaceshipSpeed = 2f;
-    private float timer = 0;
-    private float timeToLaunch;
-    private bool alreadyLaunched = false;
+    private Vector2 _destination;
+    private float _spaceshipSpeed = 2f;
+    private float _timer = 0;
+    private float _timeToLaunch;
+    private bool _alreadyLaunched = false;
 
-
-    private void OnEnable()
+    // Draws where to spawn itself and when to fire missile.
+     void OnEnable()
     {
-        alreadyLaunched = false;
-        timer = 0;
-        timeToLaunch = UnityEngine.Random.Range(2, 15);
+        _alreadyLaunched = false;
+        _timer = 0;
+        _timeToLaunch = UnityEngine.Random.Range(2, 15);
         int num = UnityEngine.Random.Range(0, 2);
         switch (num)
         {
             case 0:
-                transform.position = leftSpawnPoint.position;
-                destination = rightSpawnPoint.position;
+                transform.position = _leftSpawnPoint.position;
+                _destination = _rightSpawnPoint.position;
                 break;
             case 1:
-                transform.position = rightSpawnPoint.position;
-                destination = leftSpawnPoint.position;
+                transform.position = _rightSpawnPoint.position;
+                _destination = _leftSpawnPoint.position;
                 break;
         }
 
     }
     void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, destination, spaceshipSpeed * Time.deltaTime);
-        if (!alreadyLaunched)
+        transform.position = Vector3.MoveTowards(transform.position, _destination, _spaceshipSpeed * Time.deltaTime);
+        if (!_alreadyLaunched)
         {
-            timer += Time.deltaTime;
-            if (timer >= timeToLaunch)
+            _timer += Time.deltaTime;
+            if (_timer >= _timeToLaunch)
             {
-                launcher.FireMissile(transform.position);
-                alreadyLaunched = true;
+                _launcher.FireMissile(transform.position); // Fires missile form spaceship position.
+                _alreadyLaunched = true;
             }
-            if (Vector3.Distance(transform.position, destination) < 0.001f)
+            if (Vector3.Distance(transform.position, _destination) < 0.001f)
             {
                 gameObject.SetActive(false);
             }

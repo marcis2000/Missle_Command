@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+   //Missile which can be friendly or hostile.
+   //Friendly missiles use markers to show where their explosion begins.
+
 public class Missile : MonoBehaviour, iDestroyable
 {
-    public GameObject marker;
-    public CircleCollider2D circeClollider;
-    public SpriteRenderer spriteRenderer;
-    public Vector2 destination;
-    public float missleSpeed;
-    public bool isFriendly;
+    public GameObject Marker;
+    public CircleCollider2D CirceClollider;
+    public SpriteRenderer SpriteRenderer;
+    public Vector2 Destination;
+    public float MissleSpeed;
+    public bool IsFriendly;
 
     public event EventHandler OnAddMissilePoints;
     public event EventHandler OnAddToDestroyedEnemyMissilesCount;
@@ -23,20 +26,21 @@ public class Missile : MonoBehaviour, iDestroyable
     public State state;
 
 
-    [SerializeField] private Sprite missle;
-    [SerializeField] private Sprite circle;
+    [SerializeField] private Sprite _missle;
+    [SerializeField] private Sprite _circle;
 
-    private Vector2 targetSize = new Vector2(8f, 8f);
-    private float growSpeed = 6f;
-    private float explosionTimer = 2f;
-    private float timer = 0;
+    [SerializeField] private Vector2 _targetSize = new Vector2(8f, 8f);
+    [SerializeField] private float _growSpeed = 6f;
+    [SerializeField] private float _explosionTimer = 2f;
+
+    private float _timer = 0;
 
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        circeClollider = GetComponent<CircleCollider2D>();
-        circeClollider.enabled = false;
-        spriteRenderer.sprite = missle;
+        SpriteRenderer = GetComponent<SpriteRenderer>();
+        CirceClollider = GetComponent<CircleCollider2D>();
+        CirceClollider.enabled = false;
+        SpriteRenderer.sprite = _missle;
     }
 
     void OnEnable()
@@ -49,27 +53,27 @@ public class Missile : MonoBehaviour, iDestroyable
     {
        if(state == State.Fly)
        {
-            transform.position = Vector3.MoveTowards(transform.position, destination, missleSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, Destination, MissleSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, destination) < 0.001f)
+            if (Vector2.Distance(transform.position, Destination) < 0.001f)
             {
-                spriteRenderer.sprite = circle;
-                circeClollider.enabled = true;
+                SpriteRenderer.sprite = _circle;
+                CirceClollider.enabled = true;
                 transform.localScale = new Vector2(0.5f, 0.5f);
                 state = State.Explode;
-                if(marker!= null)
+                if(Marker!= null)
                 {
-                    marker.SetActive(false);
+                    Marker.SetActive(false);
                 }
             }
         }
        else if(state == State.Explode)
        {
-            transform.localScale = Vector2.MoveTowards(transform.localScale, targetSize, growSpeed * Time.deltaTime);
-            timer += Time.deltaTime;
-            if(timer >= explosionTimer)
+            transform.localScale = Vector2.MoveTowards(transform.localScale, _targetSize, _growSpeed * Time.deltaTime);
+            _timer += Time.deltaTime;
+            if(_timer >= _explosionTimer)
             {
-                timer = 0;
+                _timer = 0;
                 DisactivateMissle();
             }
        }
@@ -81,41 +85,45 @@ public class Missile : MonoBehaviour, iDestroyable
         iDestroyable destroyable = collider.GetComponent<iDestroyable>();
         if (destroyable != null)
         {
-            if (collider.tag == "Spaceship" && !isFriendly)
+
+            // Avoids hitting allies.
+
+            if (collider.tag == "Spaceship" && !IsFriendly)   
             {
                 return;
             }
-            else if (collider.tag == "Missile" && spriteRenderer.sprite == missle &&
-                     collider.GetComponent<Missile>().spriteRenderer.sprite == missle)
+            else if (collider.tag == "Missile" && SpriteRenderer.sprite == _missle &&
+                     collider.GetComponent<Missile>().SpriteRenderer.sprite == _missle)
             {
                 return;
             }
             else
             {
-                destroyable.Destroy();
+                destroyable.Destroy();   // Destroys all objects inheriting from IDestroyable
             }
         }
     }
 
+    // Disactivates missile after explosion so it can be pooled again.
     public void DisactivateMissle()
     {
-        if (!isFriendly)
+        if (!IsFriendly)
         {
             OnAddToDestroyedEnemyMissilesCount?.Invoke(this, EventArgs.Empty);
         }
         transform.localScale = new Vector2(1f, 1f);
-        circeClollider.enabled = false;
-        spriteRenderer.sprite = missle;
+        CirceClollider.enabled = false;
+        SpriteRenderer.sprite = _missle;
         state = State.Fly;
         gameObject.SetActive(false);
     }
 
     public void Destroy()
     {
-        spriteRenderer.sprite = circle;
-        circeClollider.enabled = true;
+        SpriteRenderer.sprite = _circle;
+        CirceClollider.enabled = true;
         state = State.Explode;
-        if (!isFriendly)
+        if (!IsFriendly)
         {
             OnAddMissilePoints?.Invoke(this, EventArgs.Empty);
         }

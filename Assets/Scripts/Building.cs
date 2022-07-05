@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+
 public class Building : MonoBehaviour, iDestroyable
 {
     public event EventHandler OnBuildingDestroyed;
@@ -10,7 +11,6 @@ public class Building : MonoBehaviour, iDestroyable
     private Animator _animator;
     private int _animIDExplosion;
 
-    // Start is called before the first frame update
     void Awake()
     {
         _animator = gameObject.GetComponent<Animator>();

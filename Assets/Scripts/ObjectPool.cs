@@ -4,43 +4,43 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public static ObjectPool instance;
-    public List<GameObject> pooledMissiles = new List<GameObject>();
+    public static ObjectPool Instance;
+    public List<GameObject> PooledMissiles = new List<GameObject>();
 
-    [SerializeField] private GameObject missilePrefab;
-    [SerializeField] private GameObject markerPrefab;
+    [SerializeField] private GameObject _missilePrefab;
+    [SerializeField] private GameObject _markerPrefab;
 
-    private int amountOfMissilesToPool = 30;
+    private int _amountOfMissilesToPool = 30;
 
     void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
     }
 
     void Start()
     {
-        for (int i = 0; i < amountOfMissilesToPool; i++)
+        for (int i = 0; i < _amountOfMissilesToPool; i++)
         {
-            GameObject missile = Instantiate(missilePrefab);
-            GameObject marker = Instantiate(markerPrefab);
-            missile.GetComponent<Missile>().marker = marker;
+            GameObject missile = Instantiate(_missilePrefab);
+            GameObject marker = Instantiate(_markerPrefab);
+            missile.GetComponent<Missile>().Marker = marker;
             missile.SetActive(false);
             marker.SetActive(false);
-            pooledMissiles.Add(missile);
+            PooledMissiles.Add(missile);
         }
 
 
     }
     public GameObject GetPooledMissile()
     {
-        for (int i = 0; i < pooledMissiles.Count; i++)
+        for (int i = 0; i < PooledMissiles.Count; i++)
         {
-            if (!pooledMissiles[i].activeInHierarchy)
+            if (!PooledMissiles[i].activeInHierarchy)
             {
-                return pooledMissiles[i];
+                return PooledMissiles[i];
             }
         }
         return null;

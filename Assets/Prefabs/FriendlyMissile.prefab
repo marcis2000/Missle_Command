@@ -75,8 +75,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 8f66c60fb167a0f4299a9865ef4badc9, type: 3}
+  m_SortingOrder: 3
+  m_Sprite: {fileID: 21300000, guid: 9a397e83c4c3c994c988babb654f2b5d, type: 3}
   m_Color: {r: 0.15044188, g: 1, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,14 +99,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 340045384285454429336b65341e2d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circeClollider: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  destination: {x: 0, y: 0}
-  missleSpeed: 5
-  isFriendly: 0
+  Marker: {fileID: 0}
+  CirceClollider: {fileID: 0}
+  SpriteRenderer: {fileID: 0}
+  Destination: {x: 0, y: 0}
+  MissleSpeed: 0
+  IsFriendly: 0
   state: 0
-  missle: {fileID: 21300000, guid: 9a397e83c4c3c994c988babb654f2b5d, type: 3}
-  circle: {fileID: 21300000, guid: 8f66c60fb167a0f4299a9865ef4badc9, type: 3}
+  _missle: {fileID: 21300000, guid: 9a397e83c4c3c994c988babb654f2b5d, type: 3}
+  _circle: {fileID: 21300000, guid: 8f66c60fb167a0f4299a9865ef4badc9, type: 3}
+  _targetSize: {x: 8, y: 8}
+  _growSpeed: 6
+  _explosionTimer: 2
 --- !u!58 &8560289268981027525
 CircleCollider2D:
   m_ObjectHideFlags: 0
